@@ -1,0 +1,29 @@
+{
+  "name": "webpack-theory",
+  "version": "1.0.0",
+  "description": "这是一个实现Webpack原理的小demo",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cheering-baby/Webpack-Theory.git"
+  },
+  "author": "dai.zhihong",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Cheering-baby/Webpack-Theory/issues"
+  },
+  "homepage": "https://github.com/Cheering-baby/Webpack-Theory#readme",
+  "dependencies": {
+    "@babel/generator": "^7.16.5",
+    "@babel/parser": "^7.16.6",
+    "@babel/traverse": "^7.16.5",
+    "@babel/types": "^7.16.0",
+    "tapable": "^2.2.1"
+  }
+}
