@@ -80,9 +80,8 @@ class Compiler {
   buildEntryModule(entry) {
     Object.keys(entry).forEach((entryName) => {
       const entryPath = entry[entryName];
-      const entryObj = this.buildModule(entryName, entryPath);
-      this.entries.add(entryObj);
-      console.log(this.entries);
+      const entryObj = this.buildModule(entryName, entryPath); // 编译对应的入口文件
+      this.entries.add(entryObj); // 加入入口文件集合
       this.buildUpChunk(entryName, entryObj);
     });
   }
@@ -106,16 +105,15 @@ class Compiler {
       "utf-8"
     ));
     this.moduleCode = originSourceCode;
-    this.handleLoader(modulePath);
+    this.handleLoader(modulePath); // 每个文件都要匹配loader插件规则
     const module = this.handleWebpackCompiler(moduleName, modulePath);
     return module;
   }
 
   handleWebpackCompiler(moduleName, modulePath) {
-    // 将当前模块相对于项目启动根目录计算出相对路径 作为模块ID
+    // 将当前模块相对于项目启动根目录计算出相对路径 作为模块ID ./example/src/entry1.js
     const moduleId =
       "./" + toUnixPath(path.relative(this.rootPath, modulePath));
-    console.log(1, moduleId);
     // 创建模块对象
     const module = {
       id: moduleId,
@@ -130,29 +128,26 @@ class Compiler {
       CallExpression: (nodePath) => {
         const node = nodePath.node;
         if (node.callee.name === "require") {
+          // requirePath: ./common
           const requirePath = node.arguments[0].value;
-          console.log("requirePath: ", requirePath);
           // 寻找模块绝对路劲, 当前模块路劲 + require()对应相对路径
+          // moduleDirName: d:/project/webpack/Webpack-Theory/example/src
           const moduleDirName = toUnixPath(path.dirname(modulePath));
-          console.log("moduleDirName: ", moduleDirName);
-          console.log(
-            "modulePath: ",
-            toUnixPath(path.join(moduleDirName, requirePath))
-          );
+          // d:/project/webpack/Webpack-Theory/example/src/common
           const absolutePath = tryExtensions(
             toUnixPath(path.join(moduleDirName, requirePath)),
             this.options.resolve.extensions,
             requirePath,
             moduleDirName
           );
-          console.log("absolutePath: ", absolutePath);
-          // // 生成moduleId, 针对根路径的模块ID, 添加进入新的依赖模块路径
+          // 生成moduleId, 针对根路径的模块ID, 添加进入新的依赖模块路径
+          // ./example/src/common.js
           const moduleId =
             "./" + toUnixPath(path.relative(this.rootPath, absolutePath));
           // 通过babel修改源代码中的require变成__webpack_require__语句
           node.callee = t.identifier("__webpack_require__");
           // 修改源代码中require语句引入的模块 全部修改变为相对于跟路径来处理
-          console.log(moduleId);
+          // { type: 'StringLiteral', value: './example/src/common.js' } t.stringLiteral(moduleId)
           node.arguments = [t.stringLiteral(moduleId)];
           const alreadyModules = Array.from(this.modules).map((i) => i.id);
           if (!alreadyModules.includes(moduleId)) {
@@ -195,6 +190,7 @@ class Compiler {
           matchLoaders.push(...loader.use);
         }
       }
+      // 倒叙处理，将处理过的sourceCode传递到下一个loader
       for (let i = matchLoaders.length - 1; i >= 0; i--) {
         // 目前我们外部仅支持传入绝对路径的loader模式
         // require引入对应loader

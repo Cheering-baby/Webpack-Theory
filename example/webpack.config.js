@@ -2,6 +2,7 @@ const path = require("path");
 const PluginA = require('../plugins/plugin-a');
 const PluginB = require('../plugins/plugin-b');
 
+console.log(__dirname, path.resolve(__dirname, "./src/entry1.js"));
 // 引入loader和plugin ...
 module.exports = {
   mode: "development",
@@ -34,3 +35,4 @@ module.exports = {
     ],
   },
 };
+
